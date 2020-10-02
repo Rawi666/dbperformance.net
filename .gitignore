@@ -1,0 +1,4 @@
+dbperfornance.net/bin/*
+dbperfornance.net/obj/*
+dbperfornance.net.*.suo
+.vs/*
