@@ -11,7 +11,6 @@ namespace dbperfornance.net
         private static void Main(string[] args)
         {
             Dapper();
-            Console.ReadLine();
         }
 
         private static int numberOfEntities = 100_000;
