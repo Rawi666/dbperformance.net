@@ -2,3 +2,5 @@ dbperfornance.net/bin/*
 dbperfornance.net/obj/*
 dbperfornance.net.*.suo
 .vs/*
+### VS Code ###
+.vscode/
