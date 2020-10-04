@@ -9,6 +9,7 @@
     Column8     varchar(255),
     Column9     varchar(255),
     Column10     varchar(255),
+    Column11     varchar(255),
     Column12     varchar(255),
     Column13     varchar(255),
     Column14     varchar(255),

@@ -14,7 +14,7 @@ namespace dbperfornance.net
             Console.ReadLine();
         }
 
-        private static int numberOfEntities = 50_000;
+        private static int numberOfEntities = 100_000;
 
         private static List<TestEntity> PrepareEntities()
         {
@@ -60,10 +60,15 @@ namespace dbperfornance.net
 
             using (var con = new NpgsqlConnection("Host=192.168.1.90;Port=5432;Database=postgres;Username=postgres;Password=mysecretpassword"))
             {
-                sw = Stopwatch.StartNew();
-                con.BulkInsert<TestEntity>(entities);
-                sw.Stop();
-                Console.WriteLine($"Inserting entities took {sw.Elapsed.TotalSeconds}s");
+                con.Open();
+                using (var tx = con.BeginTransaction())
+                {
+                    sw = Stopwatch.StartNew();
+                    con.BulkInsert<TestEntity>(entities);
+                    tx.Commit();
+                    sw.Stop();
+                    Console.WriteLine($"Inserting entities took {sw.Elapsed.TotalSeconds}s");
+                }
             }
         }
     }
