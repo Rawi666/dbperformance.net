@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Transactions;
 using Z.Dapper.Plus;
 
 namespace dbperfornance.net
@@ -57,17 +58,19 @@ namespace dbperfornance.net
                 .Table("testentity")
                 .Identity(x => x.Column1);
 
-            using (var con = new NpgsqlConnection("Host=192.168.1.90;Port=5432;Database=postgres;Username=postgres;Password=mysecretpassword"))
+            using (var tx = new TransactionScope())
             {
-                con.Open();
-                using (var tx = con.BeginTransaction())
+                using (var con = new NpgsqlConnection("Host=192.168.1.90;Port=5432;Database=postgres;Username=postgres;Password=mysecretpassword"))
                 {
+                    con.Open();
+
                     sw = Stopwatch.StartNew();
                     con.BulkInsert<TestEntity>(entities);
-                    tx.Commit();
                     sw.Stop();
                     Console.WriteLine($"Inserting entities took {sw.Elapsed.TotalSeconds}s");
                 }
+
+                tx.Complete();
             }
         }
     }
