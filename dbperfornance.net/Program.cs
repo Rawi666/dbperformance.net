@@ -11,7 +11,8 @@ namespace dbperfornance.net
     {
         private static void Main(string[] args)
         {
-            Dapper();
+            //Dapper();
+            PgsqlCopy();
         }
 
         private static int numberOfEntities = 100_000;
@@ -71,6 +72,50 @@ namespace dbperfornance.net
                 }
 
                 tx.Complete();
+            }
+        }
+
+        private static void PgsqlCopy()
+        {
+            var sw = Stopwatch.StartNew();
+            var entities = PrepareEntities();
+            sw.Stop();
+            Console.WriteLine($"Preparing entities finished in {sw.ElapsedMilliseconds}ms");
+
+            using (var con = new NpgsqlConnection("Host=192.168.1.90;Port=5432;Database=postgres;Username=postgres;Password=mysecretpassword"))
+            {
+                var sql = "COPY testentity (Column1,Column2,Column3,Column4,Column5,Column6,Column7,Column8,Column9,Column10,Column11,Column12,Column13,Column14,Column15,Column16) FROM STDIN (FORMAT BINARY)";
+                con.Open();
+                sw = Stopwatch.StartNew();
+                using (var tx = con.BeginTransaction())
+                {
+                    using (var writer = con.BeginBinaryImport(sql))
+                    {
+                        foreach (var e in entities)
+                        {
+                            writer.StartRow();
+                            writer.Write(e.Column1);
+                            writer.Write(e.Column2);
+                            writer.Write(e.Column3);
+                            writer.Write(e.Column4);
+                            writer.Write(e.Column5);
+                            writer.Write(e.Column6);
+                            writer.Write(e.Column7);
+                            writer.Write(e.Column8);
+                            writer.Write(e.Column9);
+                            writer.Write(e.Column10);
+                            writer.Write(e.Column11);
+                            writer.Write(e.Column12);
+                            writer.Write(e.Column13);
+                            writer.Write(e.Column14);
+                            writer.Write(e.Column15);
+                            writer.Write(e.Column16);
+                        }
+                        writer.Complete();
+                    }
+                    tx.Commit();
+                }
+                Console.WriteLine($"Inserting entities took {sw.Elapsed.TotalSeconds}s");
             }
         }
     }
